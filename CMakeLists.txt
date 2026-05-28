@@ -44,6 +44,15 @@ add_executable(AbyssHollow
 target_include_directories(AbyssHollow PRIVATE src)
 target_link_libraries(AbyssHollow PRIVATE sfml-graphics sfml-window sfml-system sfml-audio)
 
+if(WIN32)
+    add_custom_command(TARGET AbyssHollow POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy -t "$<TARGET_FILE_DIR:AbyssHollow>" "$<TARGET_RUNTIME_DLLS:AbyssHollow>"
+        COMMAND_EXPAND_LISTS
+        COMMENT "Copying runtime DLLs beside AbyssHollow"
+        VERBATIM
+    )
+endif()
+
 if(MSVC)
     target_compile_options(AbyssHollow PRIVATE /W4 /permissive-)
 else()
