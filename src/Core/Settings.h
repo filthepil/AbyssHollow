@@ -17,7 +17,7 @@ struct Settings {
     DisplayMode displayMode = DisplayMode::Windowed;
     float mainVolume = 80.f;
     float playerVolume = 80.f;
-    std::string fontPath = "C:/Windows/Fonts/segoeui.ttf";
+    std::string fontPath = "assets/fonts/main.ttf";
 };
 
 std::string toString(DisplayMode mode);

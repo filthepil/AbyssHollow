@@ -10,7 +10,7 @@ Abyss Hollow is a first working C++ iteration of a 2D top-down, sound-focused su
 - Escape in gameplay opens a pause menu with **Return to game**, **Quit to main menu**, **Quit to desktop**, and **Settings**.
 - Settings menu supports editable resolution, display mode, and cosmetic sound sliders.
 - Main and player volume sliders support mouse dragging and direct numeric entry.
-- External asset/config folders are used for future textures, future sounds, settings, and saves; UI text defaults to Segoe UI from the Windows font directory.
+- External asset/config folders are used for future textures, future sounds, settings, saves, and the placeholder UI font path.
 - Stub systems are ready for world save/load, player save/load, echolocation, audio emitters, creature sounds, world generation, texture loading, and settings persistence.
 
 ## Suggested Folder Structure
@@ -18,10 +18,10 @@ Abyss Hollow is a first working C++ iteration of a 2D top-down, sound-focused su
 ```text
 AbyssHollow/
 ├── assets/
-│   ├── fonts/       # Optional project fonts; currently empty because Windows Segoe UI is used by default.
+│   ├── fonts/       # Project UI fonts. The expected placeholder is assets/fonts/main.ttf.
 │   ├── sounds/      # Future ambience, creature, player, and UI audio.
 │   └── textures/    # Future sprites, UI skins, tiles, and heart visuals.
-├── configs/         # Editable defaults such as resolution and sound settings.
+├── configs/         # Editable defaults such as resolution, sound settings, and font_path.
 ├── saves/           # Future world, player, slot, and settings save data.
 ├── src/
 │   ├── Core/        # Game loop, settings, and state stack.
@@ -40,27 +40,47 @@ AbyssHollow/
 - CMake 3.22 or newer
 - A C++17 compiler
 - Git, when using the default SFML FetchContent path
-- Linux desktop dependencies required by SFML, such as X11/OpenGL/OpenAL development packages
+- Platform graphics/audio dependencies required by SFML
+  - Windows: Visual Studio Build Tools or Visual Studio with the Desktop development with C++ workload
+  - Linux: X11/OpenGL/OpenAL development packages for your distribution
 
 ### Configure and build
 
 By default, CMake downloads SFML 2.6.1 automatically:
 
-```bash
+```text
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-cmake --build build -j2
-./build/AbyssHollow
+cmake --build build --parallel 2
 ```
 
 If SFML 2.6 is already installed on your system, disable fetching:
 
-```bash
+```text
 cmake -S . -B build -DABYSS_FETCH_SFML=OFF -DCMAKE_BUILD_TYPE=Debug
-cmake --build build -j2
+cmake --build build --parallel 2
+```
+
+Run the game from the repository root on Linux/macOS-like shells:
+
+```text
 ./build/AbyssHollow
 ```
 
-The executable copies `assets/` and `configs/` beside the binary after each successful build, so runtime assets remain external and editable. No font file is bundled; `configs/settings.ini` points to `C:/Windows/Fonts/segoeui.ttf`, with runtime fallbacks to other standard Windows fonts.
+Run the game from the repository root on Windows PowerShell when using a single-config generator such as Ninja:
+
+```text
+.\build\AbyssHollow.exe
+```
+
+Run the game from the repository root on Windows PowerShell when using Visual Studio's default multi-config generator:
+
+```text
+.\build\Debug\AbyssHollow.exe
+```
+
+The executable copies `assets/` and `configs/` beside the binary after each successful build, so runtime assets remain external and editable. The default configuration expects the future project font at `assets/fonts/main.ttf`; this placeholder file is not included yet.
+
+For a Windows-focused walkthrough, see [BUILD_WINDOWS.md](BUILD_WINDOWS.md).
 
 ## Controls
 
