@@ -9,7 +9,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace abyss {
 
@@ -105,24 +104,12 @@ void Game::createWindow() {
 }
 
 void Game::loadCoreAssets() {
-    // Prefer Segoe UI, a standard Windows UI font, so the project no longer
-    // ships a font file in the archive. The additional candidates are also
-    // standard Windows fonts and are not copied into the game.
-    const std::vector<std::string> fontCandidates{
-        m_settings.fontPath,
-        "C:/Windows/Fonts/segoeui.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-        "C:/Windows/Fonts/tahoma.ttf"
-    };
-
-    for (const auto& path : fontCandidates) {
-        if (m_resources.loadFont("default", path)) {
-            m_settings.fontPath = path;
-            return;
-        }
+    if (m_resources.loadFont("default", m_settings.fontPath)) {
+        return;
     }
 
-    std::cerr << "Failed to load a default UI font. Set font_path in configs/settings.ini.\n";
+    std::cerr << "Failed to load the default UI font at " << m_settings.fontPath
+              << ". Add assets/fonts/main.ttf or update font_path in configs/settings.ini.\n";
 }
 
 } // namespace abyss

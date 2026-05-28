@@ -51,7 +51,9 @@ else()
 endif()
 
 add_custom_command(TARGET AbyssHollow POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:AbyssHollow>/assets
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/configs $<TARGET_FILE_DIR:AbyssHollow>/configs
-    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:AbyssHollow>/saves
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:AbyssHollow>/assets"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/configs" "$<TARGET_FILE_DIR:AbyssHollow>/configs"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:AbyssHollow>/saves"
+    COMMENT "Copying runtime assets, configs, and save folder beside AbyssHollow"
+    VERBATIM
 )
