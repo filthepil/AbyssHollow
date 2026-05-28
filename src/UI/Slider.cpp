@@ -1,5 +1,8 @@
 #include "UI/Slider.h"
 
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <sstream>

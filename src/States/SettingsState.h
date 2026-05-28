@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/State.h"
+#include "Core/Settings.h"
 #include "UI/Button.h"
 #include "UI/Slider.h"
 

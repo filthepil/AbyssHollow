@@ -1,5 +1,8 @@
 #include "UI/Button.h"
 
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
+
 namespace abyss::ui {
 
 Button::Button(const sf::Font& font, std::string label, sf::Vector2f size) {
