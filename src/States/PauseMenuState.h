@@ -14,8 +14,10 @@ public:
     void handleEvent(const sf::Event& event) override;
     void update(float deltaSeconds) override;
     void draw(sf::RenderWindow& window) override;
+    void onDisplayChanged() override;
 
 private:
+    void rebuildLayout();
     sf::RectangleShape m_panel;
     sf::Text m_title;
     ui::MenuList m_menu;

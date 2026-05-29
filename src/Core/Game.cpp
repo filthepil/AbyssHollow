@@ -5,6 +5,7 @@
 #include "States/PauseMenuState.h"
 #include "States/SettingsState.h"
 
+#include <SFML/Graphics/View.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <iostream>
@@ -31,6 +32,10 @@ void Game::run() {
         while (m_window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 quitToDesktop();
+            } else if (event.type == sf::Event::Resized) {
+                m_window.setView(sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(event.size.width),
+                                                        static_cast<float>(event.size.height))));
+                m_states.onDisplayChanged();
             }
             if (State* state = m_states.top()) {
                 state->handleEvent(event);
@@ -89,6 +94,7 @@ void Game::quitToDesktop() {
 
 void Game::applyVideoSettings() {
     createWindow();
+    m_states.onDisplayChanged();
 }
 
 void Game::initializeDisplaySettings() {
@@ -100,6 +106,8 @@ void Game::initializeDisplaySettings() {
 
     if (!m_settings.uiScaleManual) {
         m_settings.uiScale = automaticUiScale(m_settings.resolutionWidth, m_settings.resolutionHeight);
+    } else {
+        m_settings.uiScale = fitUiScaleToScreen(m_settings.resolutionWidth, m_settings.resolutionHeight, m_settings.uiScale);
     }
 }
 
@@ -115,6 +123,7 @@ void Game::createWindow() {
     }
 
     m_window.create(mode, "Abyss Hollow", style);
+    m_window.setView(sf::View(sf::FloatRect(0.f, 0.f, static_cast<float>(mode.width), static_cast<float>(mode.height))));
     m_window.setFramerateLimit(60);
 }
 

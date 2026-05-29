@@ -24,6 +24,12 @@ const State* StateStack::top() const {
     return m_states.empty() ? nullptr : m_states.back().get();
 }
 
+void StateStack::onDisplayChanged() {
+    for (auto& state : m_states) {
+        state->onDisplayChanged();
+    }
+}
+
 bool StateStack::empty() const {
     return m_states.empty();
 }

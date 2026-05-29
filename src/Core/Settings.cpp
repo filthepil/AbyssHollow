@@ -35,6 +35,18 @@ float clampUiScale(float value) {
     return std::clamp(value, 0.5f, 2.f);
 }
 
+float comfortableFitScale(unsigned int width, unsigned int height) {
+    constexpr float baseUiWidth = 900.f;
+    constexpr float baseUiHeight = 900.f;
+    constexpr float safeScreenFill = 0.92f;
+    if (width == 0 || height == 0) {
+        return 2.f;
+    }
+
+    return std::min((static_cast<float>(width) * safeScreenFill) / baseUiWidth,
+                    (static_cast<float>(height) * safeScreenFill) / baseUiHeight);
+}
+
 } // namespace
 
 std::string toString(DisplayMode mode) {
@@ -75,7 +87,11 @@ float automaticUiScale(unsigned int width, unsigned int height) {
 
     const float widthScale = static_cast<float>(width) / referenceWidth;
     const float heightScale = static_cast<float>(height) / referenceHeight;
-    return clampUiScale(std::min(widthScale, heightScale));
+    return fitUiScaleToScreen(width, height, std::min(widthScale, heightScale) * 2.f);
+}
+
+float fitUiScaleToScreen(unsigned int width, unsigned int height, float requestedScale) {
+    return std::clamp(requestedScale, 0.5f, std::max(0.5f, std::min(2.f, comfortableFitScale(width, height))));
 }
 
 Settings loadSettingsFile(const std::string& path) {
