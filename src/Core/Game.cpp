@@ -6,6 +6,7 @@
 #include "States/SettingsState.h"
 
 #include <SFML/System/Clock.hpp>
+#include <SFML/Window/VideoMode.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -15,6 +16,7 @@ namespace abyss {
 Game::Game()
     : m_settings(loadSettingsFile("configs/settings.ini")),
       m_saves("saves") {
+    initializeDisplaySettings();
     createWindow();
     loadCoreAssets();
     showMainMenu();
@@ -52,6 +54,7 @@ ResourceManager& Game::resources() { return m_resources; }
 AudioSystem& Game::audio() { return m_audio; }
 SaveSystem& Game::saves() { return m_saves; }
 Settings& Game::settings() { return m_settings; }
+float Game::uiScale() const { return m_settings.uiScale; }
 
 void Game::showMainMenu() {
     m_states.clear();
@@ -88,6 +91,18 @@ void Game::applyVideoSettings() {
     createWindow();
 }
 
+void Game::initializeDisplaySettings() {
+    const sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    if (m_settings.resolutionWidth == 0 || m_settings.resolutionHeight == 0) {
+        m_settings.resolutionWidth = desktop.width;
+        m_settings.resolutionHeight = desktop.height;
+    }
+
+    if (!m_settings.uiScaleManual) {
+        m_settings.uiScale = automaticUiScale(m_settings.resolutionWidth, m_settings.resolutionHeight);
+    }
+}
+
 void Game::createWindow() {
     sf::VideoMode mode(m_settings.resolutionWidth, m_settings.resolutionHeight);
     sf::Uint32 style = sf::Style::Titlebar | sf::Style::Close;
@@ -95,7 +110,7 @@ void Game::createWindow() {
     if (m_settings.displayMode == DisplayMode::Fullscreen) {
         style = sf::Style::Fullscreen;
     } else if (m_settings.displayMode == DisplayMode::BorderlessFullscreen) {
-        mode = sf::VideoMode::getDesktopMode();
+        mode = sf::VideoMode(m_settings.resolutionWidth, m_settings.resolutionHeight);
         style = sf::Style::None;
     }
 

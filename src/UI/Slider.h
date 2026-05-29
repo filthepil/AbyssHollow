@@ -12,10 +12,10 @@
 namespace abyss::ui {
 
 // Slider with direct numeric typing. Click the number box, type digits, and
-// press Enter. This is cosmetic for now and intentionally not wired to audio.
+// press Enter to commit an exact value.
 class Slider {
 public:
-    Slider(const sf::Font& font, std::string label, float min, float max, float value);
+    Slider(const sf::Font& font, std::string label, float min, float max, float value, float uiScale = 1.f);
 
     void setPosition(sf::Vector2f position);
     void handleEvent(const sf::Event& event, const sf::RenderWindow& window);
@@ -28,6 +28,7 @@ private:
     void refreshText();
     void commitTypedValue();
 
+    float m_uiScale = 1.f;
     float m_min = 0.f;
     float m_max = 100.f;
     float m_value = 0.f;

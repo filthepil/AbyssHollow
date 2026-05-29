@@ -20,6 +20,7 @@ public:
     AudioSystem& audio();
     SaveSystem& saves();
     Settings& settings();
+    float uiScale() const;
 
     void showMainMenu();
     void startNewGame();
@@ -30,6 +31,7 @@ public:
     void applyVideoSettings();
 
 private:
+    void initializeDisplaySettings();
     void createWindow();
     void loadCoreAssets();
 

@@ -26,6 +26,15 @@ float clampVolume(float value) {
     return std::clamp(value, 0.f, 100.f);
 }
 
+bool parseBool(const std::string& value) {
+    const std::string normalized = lower(trim(value));
+    return normalized == "1" || normalized == "true" || normalized == "yes" || normalized == "on";
+}
+
+float clampUiScale(float value) {
+    return std::clamp(value, 0.5f, 2.f);
+}
+
 } // namespace
 
 std::string toString(DisplayMode mode) {
@@ -37,6 +46,15 @@ std::string toString(DisplayMode mode) {
     return "windowed";
 }
 
+std::string displayModeLabel(DisplayMode mode) {
+    switch (mode) {
+        case DisplayMode::Fullscreen: return "Exclusive Fullscreen";
+        case DisplayMode::BorderlessFullscreen: return "Borderless Fullscreen";
+        case DisplayMode::Windowed: return "Windowed";
+    }
+    return "Windowed";
+}
+
 DisplayMode displayModeFromString(const std::string& value) {
     const std::string normalized = lower(trim(value));
     if (normalized == "fullscreen") {
@@ -46,6 +64,18 @@ DisplayMode displayModeFromString(const std::string& value) {
         return DisplayMode::BorderlessFullscreen;
     }
     return DisplayMode::Windowed;
+}
+
+float automaticUiScale(unsigned int width, unsigned int height) {
+    constexpr float referenceWidth = 2560.f;
+    constexpr float referenceHeight = 1600.f;
+    if (width == 0 || height == 0) {
+        return 1.f;
+    }
+
+    const float widthScale = static_cast<float>(width) / referenceWidth;
+    const float heightScale = static_cast<float>(height) / referenceHeight;
+    return clampUiScale(std::min(widthScale, heightScale));
 }
 
 Settings loadSettingsFile(const std::string& path) {
@@ -77,6 +107,11 @@ Settings loadSettingsFile(const std::string& path) {
             parser >> settings.resolutionHeight;
         } else if (key == "display_mode") {
             settings.displayMode = displayModeFromString(value);
+        } else if (key == "ui_scale") {
+            parser >> settings.uiScale;
+            settings.uiScale = clampUiScale(settings.uiScale);
+        } else if (key == "ui_scale_manual") {
+            settings.uiScaleManual = parseBool(value);
         } else if (key == "main_volume") {
             parser >> settings.mainVolume;
             settings.mainVolume = clampVolume(settings.mainVolume);
@@ -97,6 +132,8 @@ void saveSettingsFile(const std::string& path, const Settings& settings) {
     output << "resolution_width=" << settings.resolutionWidth << '\n';
     output << "resolution_height=" << settings.resolutionHeight << '\n';
     output << "display_mode=" << toString(settings.displayMode) << '\n';
+    output << "ui_scale=" << settings.uiScale << '\n';
+    output << "ui_scale_manual=" << (settings.uiScaleManual ? "true" : "false") << '\n';
     output << "main_volume=" << settings.mainVolume << '\n';
     output << "player_volume=" << settings.playerVolume << '\n';
     output << "font_path=" << settings.fontPath << '\n';
