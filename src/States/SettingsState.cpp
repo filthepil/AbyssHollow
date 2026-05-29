@@ -66,7 +66,7 @@ SettingsState::SettingsState(Game& game)
     }
 
     m_panel.setSize({scaled(760.f), scaled(820.f)});
-    m_panel.setPosition({scaled(60.f), scaled(40.f)});
+    m_panel.setPosition({scaled(24.f), scaled(24.f)});
     m_panel.setFillColor(sf::Color(7, 7, 12, 245));
     m_panel.setOutlineColor(sf::Color(90, 90, 120));
     m_panel.setOutlineThickness(scaled(2.f));
@@ -134,15 +134,27 @@ SettingsState::SettingsState(Game& game)
     m_errorText.setFont(font);
     m_errorText.setCharacterSize(textSize(18.f, m_scale));
     m_errorText.setFillColor(sf::Color(255, 135, 135));
-    m_errorText.setPosition({scaled(100.f), scaled(610.f)});
+    m_errorText.setPosition({scaled(100.f), scaled(675.f)});
+
+    m_controlsButton = std::make_unique<ui::Button>(font, "Controls", sf::Vector2f{scaled(180.f), scaled(50.f)}, m_scale);
+    m_controlsButton->setPosition({scaled(100.f), scaled(605.f)});
+    m_controlsButton->setCallback([this] { openControlsMenu(); });
 
     m_applyButton = std::make_unique<ui::Button>(font, "Apply", sf::Vector2f{scaled(180.f), scaled(50.f)}, m_scale);
-    m_applyButton->setPosition({scaled(100.f), scaled(690.f)});
+    m_applyButton->setPosition({scaled(100.f), scaled(745.f)});
     m_applyButton->setCallback([this] { applyAndClose(); });
 
     m_backButton = std::make_unique<ui::Button>(font, "Back", sf::Vector2f{scaled(180.f), scaled(50.f)}, m_scale);
-    m_backButton->setPosition({scaled(310.f), scaled(690.f)});
-    m_backButton->setCallback([this] { m_game.closeCurrentState(); });
+    m_backButton->setPosition({scaled(310.f), scaled(745.f)});
+    m_backButton->setCallback([this] { m_closeAfterEvent = true; });
+
+    m_controlsApplyButton = std::make_unique<ui::Button>(font, "Apply", sf::Vector2f{scaled(180.f), scaled(50.f)}, m_scale);
+    m_controlsApplyButton->setPosition({scaled(100.f), scaled(180.f)});
+    m_controlsApplyButton->setCallback([this] { closeControlsMenu(); });
+
+    m_controlsCancelButton = std::make_unique<ui::Button>(font, "Cancel", sf::Vector2f{scaled(180.f), scaled(50.f)}, m_scale);
+    m_controlsCancelButton->setPosition({scaled(310.f), scaled(180.f)});
+    m_controlsCancelButton->setCallback([this] { closeControlsMenu(); });
 
     refreshResolutionInput();
     rebuildLabels();
@@ -150,7 +162,17 @@ SettingsState::SettingsState(Game& game)
 
 void SettingsState::handleEvent(const sf::Event& event) {
     if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-        m_game.closeCurrentState();
+        if (m_page == MenuPage::Controls) {
+            closeControlsMenu();
+        } else {
+            m_game.closeCurrentState();
+        }
+        return;
+    }
+
+    if (m_page == MenuPage::Controls) {
+        m_controlsApplyButton->handleEvent(event, m_game.window());
+        m_controlsCancelButton->handleEvent(event, m_game.window());
         return;
     }
 
@@ -194,8 +216,13 @@ void SettingsState::handleEvent(const sf::Event& event) {
     }
     m_mainVolume.handleEvent(event, m_game.window());
     m_playerVolume.handleEvent(event, m_game.window());
+    m_controlsButton->handleEvent(event, m_game.window());
     m_applyButton->handleEvent(event, m_game.window());
     m_backButton->handleEvent(event, m_game.window());
+
+    if (m_closeAfterEvent) {
+        m_game.closeCurrentState();
+    }
 }
 
 void SettingsState::update(float) {}
@@ -203,6 +230,13 @@ void SettingsState::update(float) {}
 void SettingsState::draw(sf::RenderWindow& window) {
     window.draw(m_panel);
     window.draw(m_title);
+
+    if (m_page == MenuPage::Controls) {
+        m_controlsApplyButton->draw(window);
+        m_controlsCancelButton->draw(window);
+        return;
+    }
+
     window.draw(m_resolutionLabel);
     window.draw(m_resolutionBox);
     window.draw(m_resolutionValue);
@@ -217,6 +251,7 @@ void SettingsState::draw(sf::RenderWindow& window) {
     m_uiScaleSlider.draw(window);
     m_mainVolume.draw(window);
     m_playerVolume.draw(window);
+    m_controlsButton->draw(window);
     window.draw(m_errorText);
     m_applyButton->draw(window);
     m_backButton->draw(window);
@@ -269,6 +304,18 @@ void SettingsState::cycleDisplayMode() {
     rebuildLabels();
 }
 
+void SettingsState::openControlsMenu() {
+    m_page = MenuPage::Controls;
+    m_title.setString("Controls");
+    m_resolutionDropdownOpen = false;
+    setInputFocus(FocusedInput::None);
+}
+
+void SettingsState::closeControlsMenu() {
+    m_page = MenuPage::Settings;
+    m_title.setString("Settings");
+}
+
 void SettingsState::applyAndClose() {
     sf::Vector2u resolution;
     if (!validateCustomResolution(resolution)) {
@@ -284,18 +331,18 @@ void SettingsState::applyAndClose() {
     settings.playerVolume = m_playerVolume.value();
 
     if (m_userChangedUiScale) {
-        settings.uiScale = std::clamp(m_uiScaleSlider.value() / 100.f, 0.5f, 2.f);
+        settings.uiScale = fitUiScaleToScreen(resolution.x, resolution.y, m_uiScaleSlider.value() / 100.f);
         settings.uiScaleManual = true;
     } else if (resolutionChanged && !settings.uiScaleManual) {
         settings.uiScale = automaticUiScale(resolution.x, resolution.y);
     } else {
-        settings.uiScale = std::clamp(m_uiScaleSlider.value() / 100.f, 0.5f, 2.f);
+        settings.uiScale = fitUiScaleToScreen(resolution.x, resolution.y, m_uiScaleSlider.value() / 100.f);
     }
 
     saveSettingsFile("configs/settings.ini", settings);
     m_game.saves().saveSettings(settings);
     m_game.applyVideoSettings();
-    m_game.closeCurrentState();
+    m_closeAfterEvent = true;
 }
 
 bool SettingsState::validateCustomResolution(sf::Vector2u& resolution) {

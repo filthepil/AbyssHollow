@@ -26,6 +26,7 @@ std::string toString(DisplayMode mode);
 std::string displayModeLabel(DisplayMode mode);
 DisplayMode displayModeFromString(const std::string& value);
 float automaticUiScale(unsigned int width, unsigned int height);
+float fitUiScaleToScreen(unsigned int width, unsigned int height, float requestedScale);
 Settings loadSettingsFile(const std::string& path);
 void saveSettingsFile(const std::string& path, const Settings& settings);
 

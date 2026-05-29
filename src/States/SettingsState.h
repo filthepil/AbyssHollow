@@ -26,10 +26,17 @@ private:
         Height
     };
 
+    enum class MenuPage {
+        Settings,
+        Controls
+    };
+
     void addResolution(sf::Vector2u resolution);
     void rebuildLabels();
     void cycleDisplayMode();
     void applyAndClose();
+    void openControlsMenu();
+    void closeControlsMenu();
     bool validateCustomResolution(sf::Vector2u& resolution);
     void refreshResolutionInput();
     void setInputFocus(FocusedInput input);
@@ -44,6 +51,8 @@ private:
     float m_scale = 1.f;
     bool m_resolutionDropdownOpen = false;
     bool m_userChangedUiScale = false;
+    bool m_closeAfterEvent = false;
+    MenuPage m_page = MenuPage::Settings;
     FocusedInput m_focusedInput = FocusedInput::None;
     std::string m_widthInput;
     std::string m_heightInput;
@@ -62,8 +71,11 @@ private:
     sf::Text m_displayModeLabel;
     sf::Text m_errorText;
     std::unique_ptr<ui::Button> m_displayModeButton;
+    std::unique_ptr<ui::Button> m_controlsButton;
     std::unique_ptr<ui::Button> m_applyButton;
     std::unique_ptr<ui::Button> m_backButton;
+    std::unique_ptr<ui::Button> m_controlsApplyButton;
+    std::unique_ptr<ui::Button> m_controlsCancelButton;
     ui::Slider m_uiScaleSlider;
     ui::Slider m_mainVolume;
     ui::Slider m_playerVolume;

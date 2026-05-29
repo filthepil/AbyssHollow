@@ -16,6 +16,7 @@ public:
     void clear();
     State* top();
     const State* top() const;
+    void onDisplayChanged();
     bool empty() const;
 
 private:
