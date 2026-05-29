@@ -3,17 +3,20 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 
+#include <utility>
+
 namespace abyss::ui {
 
-Button::Button(const sf::Font& font, std::string label, sf::Vector2f size) {
+Button::Button(const sf::Font& font, std::string label, sf::Vector2f size, float uiScale)
+    : m_uiScale(uiScale) {
     m_shape.setSize(size);
     m_shape.setFillColor(sf::Color(20, 20, 28));
     m_shape.setOutlineColor(sf::Color(120, 120, 145));
-    m_shape.setOutlineThickness(2.f);
+    m_shape.setOutlineThickness(2.f * m_uiScale);
 
     m_text.setFont(font);
     m_text.setString(std::move(label));
-    m_text.setCharacterSize(26);
+    m_text.setCharacterSize(static_cast<unsigned int>(26.f * m_uiScale));
     m_text.setFillColor(sf::Color::White);
 }
 
@@ -49,7 +52,7 @@ void Button::updateTextPosition() {
     const sf::Vector2f buttonSize = m_shape.getSize();
     m_text.setPosition(
         buttonPos.x + (buttonSize.x - bounds.width) / 2.f - bounds.left,
-        buttonPos.y + (buttonSize.y - bounds.height) / 2.f - bounds.top - 2.f);
+        buttonPos.y + (buttonSize.y - bounds.height) / 2.f - bounds.top - 2.f * m_uiScale);
 }
 
 } // namespace abyss::ui

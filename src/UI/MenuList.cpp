@@ -2,8 +2,15 @@
 
 namespace abyss::ui {
 
+void MenuList::setScale(float uiScale) {
+    m_uiScale = uiScale;
+    m_buttonSize = {360.f * m_uiScale, 54.f * m_uiScale};
+    m_spacing = 16.f * m_uiScale;
+    setPosition(m_origin);
+}
+
 Button& MenuList::addButton(const sf::Font& font, const std::string& label, std::function<void()> callback) {
-    auto button = std::make_unique<Button>(font, label, m_buttonSize);
+    auto button = std::make_unique<Button>(font, label, m_buttonSize, m_uiScale);
     button->setCallback(std::move(callback));
     Button& reference = *button;
     m_buttons.push_back(std::move(button));

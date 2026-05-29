@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <sstream>
+#include <utility>
 
 namespace abyss::ui {
 namespace {
@@ -18,39 +19,39 @@ std::string formatValue(float value) {
 
 } // namespace
 
-Slider::Slider(const sf::Font& font, std::string label, float min, float max, float value)
-    : m_min(min), m_max(max) {
+Slider::Slider(const sf::Font& font, std::string label, float min, float max, float value, float uiScale)
+    : m_uiScale(uiScale), m_min(min), m_max(max) {
     m_label.setFont(font);
     m_label.setString(std::move(label));
-    m_label.setCharacterSize(22);
+    m_label.setCharacterSize(static_cast<unsigned int>(22.f * m_uiScale));
     m_label.setFillColor(sf::Color::White);
 
-    m_track.setSize({310.f, 8.f});
+    m_track.setSize({310.f * m_uiScale, 8.f * m_uiScale});
     m_track.setFillColor(sf::Color(55, 55, 70));
 
-    m_fill.setSize({0.f, 8.f});
+    m_fill.setSize({0.f, 8.f * m_uiScale});
     m_fill.setFillColor(sf::Color(125, 160, 255));
 
-    m_knob.setRadius(10.f);
-    m_knob.setOrigin({10.f, 10.f});
+    m_knob.setRadius(10.f * m_uiScale);
+    m_knob.setOrigin({10.f * m_uiScale, 10.f * m_uiScale});
     m_knob.setFillColor(sf::Color(210, 220, 255));
 
-    m_inputBox.setSize({74.f, 36.f});
+    m_inputBox.setSize({74.f * m_uiScale, 36.f * m_uiScale});
     m_inputBox.setFillColor(sf::Color(18, 18, 24));
-    m_inputBox.setOutlineThickness(2.f);
+    m_inputBox.setOutlineThickness(2.f * m_uiScale);
     m_inputBox.setOutlineColor(sf::Color(110, 110, 135));
 
     m_valueText.setFont(font);
-    m_valueText.setCharacterSize(20);
+    m_valueText.setCharacterSize(static_cast<unsigned int>(20.f * m_uiScale));
     m_valueText.setFillColor(sf::Color::White);
     setValue(value);
 }
 
 void Slider::setPosition(sf::Vector2f position) {
     m_label.setPosition(position);
-    m_track.setPosition({position.x, position.y + 42.f});
+    m_track.setPosition({position.x, position.y + 42.f * m_uiScale});
     m_fill.setPosition(m_track.getPosition());
-    m_inputBox.setPosition({position.x + 345.f, position.y + 27.f});
+    m_inputBox.setPosition({position.x + 345.f * m_uiScale, position.y + 27.f * m_uiScale});
     refreshText();
 }
 
@@ -118,12 +119,12 @@ void Slider::applyMouseValue(float mouseX) {
 void Slider::refreshText() {
     const float t = (m_value - m_min) / (m_max - m_min);
     m_fill.setSize({m_track.getSize().x * t, m_track.getSize().y});
-    m_knob.setPosition({m_track.getPosition().x + m_track.getSize().x * t, m_track.getPosition().y + 4.f});
+    m_knob.setPosition({m_track.getPosition().x + m_track.getSize().x * t, m_track.getPosition().y + 4.f * m_uiScale});
     m_valueText.setString(m_typing ? m_typedValue : formatValue(m_value));
     const sf::FloatRect bounds = m_valueText.getLocalBounds();
     m_valueText.setPosition(
         m_inputBox.getPosition().x + (m_inputBox.getSize().x - bounds.width) / 2.f - bounds.left,
-        m_inputBox.getPosition().y + (m_inputBox.getSize().y - bounds.height) / 2.f - bounds.top - 2.f);
+        m_inputBox.getPosition().y + (m_inputBox.getSize().y - bounds.height) / 2.f - bounds.top - 2.f * m_uiScale);
 }
 
 void Slider::commitTypedValue() {
