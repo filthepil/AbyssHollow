@@ -6,7 +6,8 @@ Abyss Hollow is a first working C++ iteration of a 2D top-down, sound-focused su
 
 - SFML-powered windowing, graphics, input, and audio linkage.
 - Main menu with **New Game**, **Continue**, **Settings**, and **Quit**.
-- New Game opens a deliberately black gameplay screen.
+- New Game loads `levels/level_01.json`, draws visible chunks with a temporary grey grid, and follows the player camera.
+- JSON levels support tile dimensions, chunks, player spawns, and teleport exits to other level files.
 - Escape in gameplay opens a pause menu with **Return to game**, **Quit to main menu**, **Quit to desktop**, and **Settings**.
 - Settings menu supports editable resolution, display mode, and cosmetic sound sliders.
 - Main and player volume sliders support mouse dragging and direct numeric entry.
@@ -22,6 +23,7 @@ AbyssHollow/
 │   ├── sounds/      # Future ambience, creature, player, and UI audio.
 │   └── textures/    # Future sprites, UI skins, tiles, and heart visuals.
 ├── configs/         # Editable defaults such as resolution, sound settings, and font_path.
+├── levels/          # JSON-authored test levels, chunks, spawns, and teleport exits.
 ├── saves/           # Future world, player, slot, and settings save data.
 ├── src/
 │   ├── Core/        # Game loop, settings, and state stack.
@@ -78,7 +80,7 @@ Run the game from the repository root on Windows PowerShell when using Visual St
 .\build\Debug\AbyssHollow.exe
 ```
 
-The executable copies `assets/` and `configs/` beside the binary after each successful build, so runtime assets remain external and editable. The default configuration expects the future project font at `assets/fonts/main.ttf`; this placeholder file is not included yet.
+The executable copies `assets/`, `configs/`, and `levels/` beside the binary after each successful build, so runtime assets and level data remain external and editable. The default configuration expects the future project font at `assets/fonts/main.ttf`; this placeholder file is not included yet.
 
 For a Windows-focused walkthrough, see [BUILD_WINDOWS.md](BUILD_WINDOWS.md).
 
@@ -86,13 +88,14 @@ For a Windows-focused walkthrough, see [BUILD_WINDOWS.md](BUILD_WINDOWS.md).
 
 - Mouse: activate menu buttons and drag sliders.
 - Click a slider number box, type a value, and press Enter for direct numeric input.
+- WASD or Arrow keys in gameplay: move the placeholder player.
 - Escape in gameplay: open pause menu.
 - Escape in pause/settings: close the current overlay.
 
 ## Next Development Hooks
 
-- `src/Player/PlayerSystem.*`: player movement, heart visibility, and echolocation input.
-- `src/World/WorldSystem.*`: floors, exits, obstacles, and raycast bounce geometry.
+- `src/Player/PlayerSystem.*`: placeholder movement, future heart visibility, and echolocation input.
+- `src/World/WorldSystem.*`: JSON level loading, chunk drawing, exits, future obstacles, and raycast bounce geometry.
 - `src/Systems/AudioSystem.*`: main/player volume routing, creature sounds, and echo playback.
 - `src/Systems/SaveSystem.*`: world, player, and settings persistence.
 - `src/Systems/ResourceManager.*`: texture atlases, sound buffers, and external asset manifests.

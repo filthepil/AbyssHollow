@@ -2,11 +2,10 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace abyss {
 
-// Future home for movement, unseen body rules, visible heart rendering, and the
-// player-owned echolocation pulse emitter.
 class PlayerSystem {
 public:
     PlayerSystem();
@@ -15,9 +14,13 @@ public:
     void update(float deltaSeconds);
     void draw(sf::RenderWindow& window) const;
 
+    sf::Vector2f position() const;
+    sf::FloatRect bounds() const;
+
 private:
     sf::RectangleShape m_placeholder;
     float m_pulseTimer = 0.f;
+    float m_moveSpeed = 220.f;
 };
 
 } // namespace abyss
