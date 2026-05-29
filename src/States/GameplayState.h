@@ -4,6 +4,8 @@
 #include "Player/PlayerSystem.h"
 #include "World/WorldSystem.h"
 
+#include <SFML/Graphics/View.hpp>
+
 namespace abyss {
 
 class GameplayState : public State {
@@ -15,9 +17,13 @@ public:
     void onDisplayChanged() override;
 
 private:
-    void placePlayerAtScreenCenter();
+    void loadStarterLevel();
+    void teleportTo(const TeleportExit& exit);
+    void updateCameraView();
+
     PlayerSystem m_player;
     WorldSystem m_world;
+    sf::View m_cameraView;
 };
 
 } // namespace abyss

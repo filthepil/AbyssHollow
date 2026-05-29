@@ -38,6 +38,7 @@ add_executable(AbyssHollow
     src/UI/MenuList.cpp
     src/UI/Slider.cpp
     src/World/WorldSystem.cpp
+    src/World/LevelData.cpp
     src/Player/PlayerSystem.cpp
 )
 
@@ -62,7 +63,8 @@ endif()
 add_custom_command(TARGET AbyssHollow POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/assets" "$<TARGET_FILE_DIR:AbyssHollow>/assets"
     COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/configs" "$<TARGET_FILE_DIR:AbyssHollow>/configs"
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/levels" "$<TARGET_FILE_DIR:AbyssHollow>/levels"
     COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:AbyssHollow>/saves"
-    COMMENT "Copying runtime assets, configs, and save folder beside AbyssHollow"
+    COMMENT "Copying runtime assets, configs, levels, and save folder beside AbyssHollow"
     VERBATIM
 )
